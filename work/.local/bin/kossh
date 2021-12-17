@@ -71,4 +71,7 @@ echo "Prepping kubeconfig to $kcfg"
 cat /tmp/k3s.yaml | sed "s/127.0.0.1/${ip}/" > /tmp/k3s2.yaml
 cat /tmp/k3s2.yaml | sed "s/default/k3s-lab-${k8sname}/" > $kcfg
 
+rm /tmp/k3s.yaml
+rm /tmp/k3s2.yaml
+
 echo "Done."
