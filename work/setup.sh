@@ -1,5 +1,7 @@
 #!/bin/bash
 
+pwd=`pwd`
+
 function lnfile() {
   file=$1
 
@@ -8,7 +10,7 @@ function lnfile() {
     rm -rf $HOME/$file
   fi
 
-  ln -s $HOME/$file $file
+  ln -s $pwd/$file $HOME/$file
 }
 
 if [[ ! -d ".local" ]]; then
