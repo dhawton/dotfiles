@@ -11,7 +11,7 @@ function lnfile() {
   ln -s $HOME/$file $file
 }
 
-if [[ -d ".local" ]]; then
+if [[ ! -d ".local" ]]; then
   echo "Run from the same directory as the files"
   exit 1
 fi
