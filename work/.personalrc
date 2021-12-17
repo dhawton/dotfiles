@@ -1,1 +1,43 @@
-/home/daniel/.personalrc
+export PATH="/usr/local/go/bin:$HOME/.gloo/bin:$HOME/.local/bin:${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+
+eval "$(starship init bash)"
+
+alias rd="ssh 172.17.243.2 sudo pihole restartdns"
+alias k="kubectl"
+alias g="glooctl"
+alias kgp="kubectl get pod"
+alias kgn="kubectl get nodes"
+alias kd="kubectl describe"
+alias kail="kubectl logs -f"
+alias ka="kubectl apply"
+alias kdel="kubectl delete"
+function kns() {
+  kubectl config set-context --current --namespace=$1
+}
+function update_kubeconfig() {
+  DEFAULT_KUBECONFIG_FILE="$HOME/.kube/config"
+  if test -f "${DEFAULT_KUBECONFIG_FILE}"
+  then
+    export KUBECONFIG="$DEFAULT_KUBECONFIG_FILE"
+  fi
+  # Your additional kubeconfig files should be inside ~/.kube/config-files
+  ADD_KUBECONFIG_FILES="$HOME/.kube/config-files"
+  mkdir -p "${ADD_KUBECONFIG_FILES}"
+  OIFS="$IFS"
+  IFS=$'\n'
+  for kubeconfigFile in `find "${ADD_KUBECONFIG_FILES}" -type f -name "*.yml" -o -name "*.yaml"`
+  do
+    export KUBECONFIG="$kubeconfigFile:$KUBECONFIG"
+  done
+  IFS="$OIFS"
+}
+function kc() {
+  update_kubeconfig
+  kubectx
+}
+
+source $HOME/.gloorc
+
+source <(kubectl completion bash)
+complete -F __start_kubectl k
+cd $HOME

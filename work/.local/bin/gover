@@ -1,0 +1,23 @@
+#!/bin/bash
+
+VER=$1
+
+echo "==> Downloading go$VER"
+wget https://golang.org/dl/go${VER}.linux-amd64.tar.gz -O /tmp/go.tar.gz
+
+if [[ $? -ne 0 ]]; then
+  echo "Had an issue getting the new go installer ($?)"
+  exit 1
+fi
+
+if [[ -d /usr/local/go ]]; then
+  echo "==> Removing older go install"
+  sudo rm -rf /usr/local/go
+fi
+
+echo "==> Extracting go to /usr/local"
+sudo tar -C /usr/local -xzf /tmp/go.tar.gz
+echo "==> Cleaning up /tmp"
+rm /tmp/go.tar.gz
+echo "==> Done, running go version"
+go version

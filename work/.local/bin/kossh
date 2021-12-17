@@ -1,0 +1,74 @@
+#!/bin/bash
+
+ip=$1
+kcfg=$2
+other=$3
+uninstall=0
+
+if [[ -z $ip ]]; then
+  echo "IP address not passed."
+  exit 1
+fi
+
+if [[ $ip == "uninstall" ]]; then
+  ip=$kcfg
+  kcfg=$other
+  uninstall=1
+fi
+
+k8sname=$(echo $ip | awk -F. '{ print $4 }')
+
+if [[ -z $kcfg ]]; then
+  kcfg="$HOME/.kube/config-files/${k8sname}.yaml"
+fi
+
+function _ssh() {
+  ssh -o "StrictHostKeyChecking=no" $ip "$@"
+}
+
+function _scp() {
+  scp -o "StrictHostKeyChecking=no" $@
+}
+
+function wait_for_ready() {
+  while true; do
+    _ssh echo 1 &>/dev/null
+    if [[ $? -eq 0 ]]; then
+      echo "SSH appears ready."
+      break
+    fi
+    sleep 5
+  done
+}
+
+echo "Checking for node readiness"
+wait_for_ready
+
+if [[ $uninstall == "1" ]]; then
+  echo "Uninstalling k3s"
+  _ssh sudo k3s-uninstall.sh
+
+  if [[ -f "$kcfg" ]]; then
+    rm "$kcfg"
+  fi
+
+  exit 0
+fi
+
+echo "Downloading k3s installer"
+_ssh curl https://get.k3s.io -o /tmp/install.sh
+
+echo "Installing k3s (1.21 channel, no traefik, embedded etcd)"
+_ssh sudo K3S_CHANNEL=v1.21 bash /tmp/install.sh --disable traefik --cluster-init
+
+echo "Grabbing kubeconfig"
+_ssh sudo cp /etc/rancher/k3s/k3s.yaml /tmp/k3s.yaml
+_ssh sudo chmod 755 /tmp/k3s.yaml
+_scp $ip:/tmp/k3s.yaml /tmp/k3s.yaml
+_ssh sudo rm /tmp/k3s.yaml
+
+echo "Prepping kubeconfig to $kcfg"
+cat /tmp/k3s.yaml | sed "s/127.0.0.1/${ip}/" > /tmp/k3s2.yaml
+cat /tmp/k3s2.yaml | sed "s/default/k3s-lab-${k8sname}/" > $kcfg
+
+echo "Done."
