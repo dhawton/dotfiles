@@ -46,4 +46,8 @@ echo "Setting up symlink used for path"
 
 ln -s "$HOME/work/istio-$istiover" "$HOME/istio"
 
+echo "Installing meshctl"
+
+curl -sL https://run.solo.io/meshctl/install | sh
+
 echo "Done"
