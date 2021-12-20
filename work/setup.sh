@@ -1,6 +1,7 @@
 #!/bin/bash
 
 pwd=`pwd`
+istiover=1.11.5
 
 function lnfile() {
   file=$1
@@ -30,5 +31,19 @@ for file in "${files[@]}"; do
   echo "Installing $file"
   lnfile $file
 done
+
+echo "Installing istio to $HOME/work"
+if [[ ! -d "$HOME/work" ]]; then
+  mkdir "$HOME/work"
+fi
+if [[ ! -z $ISTIO_VERSION ]]; then
+  istiover=$ISTIO_VERSION
+fi
+
+curl -L https://istio.io/downloadIstio | ISTIO_VERSION=$istiover sh -
+
+echo "Setting up symlink used for path"
+
+ln -s "$HOME/work/istio-$istiover" "$HOME/istio"
 
 echo "Done"
