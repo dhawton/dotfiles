@@ -1,9 +1,11 @@
 #!/bin/bash
 
 ip=$1
-kcfg=$2
+clustername=$2
 other=$3
 uninstall=0
+
+ssh-keygen -f "$HOME/.ssh/known_hosts" -R "$ip"
 
 if [[ -z $ip ]]; then
   echo "IP address not passed."
@@ -11,15 +13,17 @@ if [[ -z $ip ]]; then
 fi
 
 if [[ $ip == "uninstall" ]]; then
-  ip=$kcfg
-  kcfg=$other
+  ip=$clustername
+  clustername=$other
   uninstall=1
 fi
 
 k8sname=$(echo $ip | awk -F. '{ print $4 }')
+cfgpath="$HOME/.kube/config-files"
+kcfg="${cfgpath}/k3s-lab-${k8sname}.yaml"
 
-if [[ -z $kcfg ]]; then
-  kcfg="$HOME/.kube/config-files/${k8sname}.yaml"
+if [[ -z $clustername ]]; then
+  clustername="k3s-lab-${k8sname}"
 fi
 
 function _ssh() {
@@ -69,7 +73,7 @@ _ssh sudo rm /tmp/k3s.yaml
 
 echo "Prepping kubeconfig to $kcfg"
 cat /tmp/k3s.yaml | sed "s/127.0.0.1/${ip}/" > /tmp/k3s2.yaml
-cat /tmp/k3s2.yaml | sed "s/default/k3s-lab-${k8sname}/" > $kcfg
+cat /tmp/k3s2.yaml | sed "s/default/${clustername}/" > $kcfg
 
 rm /tmp/k3s.yaml
 rm /tmp/k3s2.yaml
