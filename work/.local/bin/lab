@@ -1,0 +1,201 @@
+#!/bin/bash
+
+workdir="$HOME/work/terraform"
+terraformrepo="git@github.com:dhawton/proxmox-lab-terraform.git"
+tfvars="$HOME/dev/work-terraform/terraform.tfvars"
+
+function do_promptyn() {
+  local __resultvar=$3
+  read -p "$1 [$2] " ret
+  local ret=$(echo "$ret" | tr '[:upper:]' '[:lower:]')
+  if [[ $ret == "" ]]; then
+    eval $__resultvar="$2"
+  else
+    case $ret in
+      y|yes)
+        eval $__resultvar="y"
+        ;;
+      n|no)
+        eval $__resultvar="n"
+        ;;
+      *)
+        echo "Invalid option"
+        do_promptyn $1 $2 $3
+    esac
+  fi
+}
+
+function usage() {
+    echo "Usage: $0 (cmd: build/b, destroy/d, install/i) [ -n | --name vm name prefix ] [ -i | --ipbase vm ip address base ] [ -c | --count number of vms to create ]"
+    echo "          [ -t | --target target host ]"
+    exit 2
+}
+
+function check_fail() {
+    t=$1
+    shift
+    if [[ $t -ne 0 ]]; then
+        echo "Failed: $@"
+        exit 1
+    fi
+}
+
+function check_fail_usage() {
+    t=$1
+    shift
+    if [[ $t -ne 0 ]]; then
+        echo "Failed: $@"
+        usage
+        exit 1
+    fi
+}
+
+if ! [ -x "$(command -v getopt)" ]; then
+    echo "Missing required command: getopt"
+    exit 1
+fi
+
+do_cmd=$1
+shift
+
+parsed_args=$(getopt -a -n "$0" -o n:i:c:t: --long "name:,ipbase:,count:,target:" -- "$@")
+check_fail_usage $? "Failed to parse arguments"
+
+# Set defaults
+vm_name_prefix="k3s-lab"
+vm_ip_base="172.20.0."
+vm_count=1
+target_host="pve2"
+
+eval set -- "$parsed_args"
+while :
+do
+    case "$1" in
+        -n|--name)
+            vm_name_prefix=$2
+            shift 2
+            ;;
+        -i|--ipbase)
+            vm_ip_base=$2
+            shift 2
+            ;;
+        -c|--count)
+            vm_count=$2
+            shift 2
+            ;;
+        -t|--target)
+            target_host=$2
+            shift 2
+            ;;
+        --)
+            shift
+            break
+            ;;
+        *)
+            echo "Unexpected option: $1 - we should never get here"
+            exit 1
+            ;;
+    esac
+done
+
+function buildlab() {
+    if [[ -d "$workdir/$vm_name_prefix" ]]; then
+        echo "Directory $workdir/$vm_name_prefix already exists"
+        exit 1
+    fi
+
+    targetdir="$workdir/$vm_name_prefix"
+
+    echo "- Creating work directory if necessary"
+    if [[ ! -d "$workdir" ]]; then
+        mkdir -p "$workdir"
+        check_fail $? "Failed to create work directory"
+    fi
+
+    echo "- Cloning terraform repo to $targetdir"
+    git clone $terraformrepo "$targetdir"
+    cd "$targetdir"
+
+    echo "- Creating tfvars"
+    cp "$tfvars" "$targetdir/terraform.tfvars"
+
+    echo "- Creating variable override file"
+    cat <<EOF >"$targetdir/variables_override.tf"
+variable "instance_name" {
+default = "$vm_name_prefix"
+}
+
+variable "vm_count" {
+default = "$vm_count"
+}
+
+variable "target_node" {
+default = "$target_host"
+}
+
+variable "ipbase" {
+default = "$vm_ip_base"
+}
+
+variable "template_name" {
+default = "ubuntu-template"
+}
+
+variable "vm_cores" {
+default = 2
+}
+
+variable "vm_memory" {
+default = 4096
+}
+
+variable "vm_disk_size" {
+default = 50
+}
+EOF
+
+    echo "- Running terraform init"
+    terraform init
+    check_fail $? "Failed to run terraform init"
+
+    echo "- Running terraform plan"
+    terraform plan
+    check_fail $? "Failed to run terraform plan"
+
+    do_promptyn "Do you want to run terraform apply?" "y" "run_terraform_apply"
+    if [[ $run_terraform_apply == "y" ]]; then
+        echo "- Running terraform apply"
+        terraform apply -auto-approve
+        check_fail $? "Failed to run terraform apply"
+
+        echo ""
+        echo "Instances created:"
+        # Print names and IP addresses
+        cat terraform.tfstate | jq -r '.resources[0].instances[] | "\(.attributes.name) \(.attributes.ssh_host)"'
+    fi
+}
+
+function destroylab() {
+    if [[ ! -d "$workdir/$vm_name_prefix" ]]; then
+        echo "Directory $workdir/$vm_name_prefix does not exist"
+        exit 1
+    fi
+
+    targetdir="$workdir/$vm_name_prefix"
+    cd "$targetdir"
+
+    echo "- Running terraform destroy"
+    terraform destroy
+    check_fail $? "Failed to run terraform destroy"
+
+    echo "- Removing work directory"
+    rm -rf "$targetdir"
+}
+
+if [[ $do_cmd == "build" || $do_cmd == "b" ]]; then
+    buildlab
+fi
+
+if [[ $do_cmd == "destroy" || $do_cmd == "d" ]]; then
+    destroylab
+fi
