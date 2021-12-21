@@ -18,7 +18,7 @@ if [[ $ip == "uninstall" ]]; then
   uninstall=1
 fi
 
-k8sname=$(echo $ip | awk -F. '{ OFS = "-" }{ print $3,$4 }')
+k8sname=$(echo $ip)
 cfgpath="$HOME/.kube/config-files"
 kcfg="${cfgpath}/k3s-lab-${k8sname}.yaml"
 

@@ -58,7 +58,7 @@ fi
 do_cmd=$1
 shift
 
-parsed_args=$(getopt -a -n "$0" -o n:i:c:t: --long "name:,ipbase:,count:,target:" -- "$@")
+parsed_args=$(getopt -a -n "$0" -o n:i:c:t:y --long "name:,ipbase:,count:,target:" -- "$@")
 check_fail_usage $? "Failed to parse arguments"
 
 # Set defaults
@@ -66,6 +66,7 @@ vm_name_prefix="k3s-lab"
 vm_ip_base="172.20.0."
 vm_count=1
 target_host="pve2"
+no_ack=0
 
 eval set -- "$parsed_args"
 while :
@@ -87,6 +88,10 @@ do
             target_host=$2
             shift 2
             ;;
+        -y)
+            no_ack=1
+            shift
+            ;;
         --)
             shift
             break
@@ -97,6 +102,33 @@ do
             ;;
     esac
 done
+
+function wait_for_cloudinit() {
+    ips=$(cat terraform.tfstate | jq -r '.resources[0].instances[].attributes.ssh_host')
+    echo "Waiting for cloud-init to finish"
+    while true; do
+        if [[ "${#ips}" == 0 ]]; then
+            echo "Done"
+            break
+        fi
+        for ip in $ips; do
+            ssh -o StrictHostKeyChecking=no $ip "sudo test -f /var/lib/cloud/instance/boot-finished" &> /dev/null
+            if [[ $? -eq 0 ]]; then
+                echo " - cloud-init finished on $ip"
+
+                # Remove that ip from the array
+                newips=()
+                for i in $ips; do
+                    if [[ $i != $ip ]]; then
+                        newips+=($i)
+                    fi
+                done
+                ips=("${newips[@]}")
+                break
+            fi
+        done
+    done
+}
 
 function buildlab() {
     if [[ -d "$workdir/$vm_name_prefix" ]]; then
@@ -168,6 +200,9 @@ EOF
         terraform apply -auto-approve
         check_fail $? "Failed to run terraform apply"
 
+        echo "VM Build Complete"
+        wait_for_cloudinit
+
         echo ""
         echo "Instances created:"
         # Print names and IP addresses
@@ -185,8 +220,13 @@ function destroylab() {
     cd "$targetdir"
 
     echo "- Running terraform destroy"
-    terraform destroy
-    check_fail $? "Failed to run terraform destroy"
+    if [[ $no_ack -eq 0 ]]; then
+        terraform destroy
+        check_fail $? "Failed to run terraform destroy"
+    else
+        terraform destroy -auto-approve
+        check_fail $? "Failed to run terraform destroy"
+    fi
 
     echo "- Removing work directory"
     rm -rf "$targetdir"
