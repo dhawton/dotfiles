@@ -1,0 +1,16 @@
+#!/bin/sh
+
+curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" -o /tmp/eksctl.tar.gz
+cd /tmp
+tar -zxf eksctl.tar.gz
+sudo mv eksctl /usr/local/bin
+sudo chmod +x /usr/local/bin/eksctl
+
+rm /tmp/eksctl.tar.gz
+
+echo ""
+echo "Install complete. Running eksctl version."
+echo ""
+
+eksctl version
+

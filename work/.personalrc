@@ -38,6 +38,8 @@ function kc() {
   kubectx
 }
 
+export AWS_PROFILE=work
+
 update_kubeconfig
 source $HOME/.gloorc
 source <(kubectl completion bash)

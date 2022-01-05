@@ -1,0 +1,13 @@
+#!/bin/sh
+
+curl -q "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/awscliv2.zip"
+cd /tmp
+unzip -qq -o awscliv2.zip
+sudo ./aws/install --update
+rm -rf /tmp/aws
+rm /tmp/awscliv2.zip
+
+echo ""
+echo "Install completed, running aws --version"
+echo ""
+aws --version
