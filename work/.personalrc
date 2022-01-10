@@ -39,9 +39,15 @@ function kc() {
 }
 
 export AWS_PROFILE=work
+cd $HOME
 
 update_kubeconfig
 source $HOME/.gloorc
 source <(kubectl completion bash)
 complete -F __start_kubectl k
-cd $HOME
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f "$HOME/.local/google-cloud-sdk/path.bash.inc" ]; then . "$HOME/.local/google-cloud-sdk/path.bash.inc"; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f "$HOME/.local/google-cloud-sdk/completion.bash.inc" ]; then . "$HOME/.local/google-cloud-sdk/completion.bash.inc"; fi

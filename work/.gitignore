@@ -1,2 +1,3 @@
 .local/share
 .local/lib/python3.8/site-packages
+.local/google-cloud-sdk

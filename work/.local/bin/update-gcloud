@@ -1,0 +1,13 @@
+#!/bin/bash
+
+version=$1
+
+if [[ "$version" == "" ]]; then
+  echo "Version required."
+  exit 1
+fi
+
+url=https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${version}-linux-x86_64.tar.gz
+
+curl https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-367.0.0-linux-x86_64.tar.gz -o /tmp/gcloud.tgz
+tar -zxf /tmp/gcloud.tgz -C $HOME/.local
