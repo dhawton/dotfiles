@@ -26,7 +26,9 @@ else
   ln -s $HOME/.local .local
 fi
 
-files=(.personalrc .vimrc)
+mkdir $HOME/.config &>/dev/null
+
+files=(.personalrc .vimrc .config/starship.toml)
 for file in "${files[@]}"; do
   echo "Installing $file"
   lnfile $file

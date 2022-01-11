@@ -1,0 +1,8 @@
+[hostname]
+format = "[$hostname](bold yellow) "
+[username]
+format = "[$user](bold red)[@](bold green)"
+[aws]
+format = "[AWS:($profile)](yellow) "
+[gcloud]
+format = "[GCP:($account@$domain)](red) "
