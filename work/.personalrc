@@ -13,6 +13,7 @@ alias kail="kubectl logs -f"
 alias ka="kubectl apply"
 alias kdel="kubectl delete"
 alias c="code ."
+alias ins="instruqt"
 function kns() {
   kubectl config set-context --current --namespace=$1
 }
