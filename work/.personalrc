@@ -17,6 +17,9 @@ alias ins="instruqt"
 function kns() {
   kubectl config set-context --current --namespace=$1
 }
+function oc() {
+  KUBECONFIG=$(cat ~/.occonfig) ~/.local/bin/oc "$@"
+}
 function update_kubeconfig() {
   DEFAULT_KUBECONFIG_FILE="$HOME/.kube/config"
   if test -f "${DEFAULT_KUBECONFIG_FILE}"

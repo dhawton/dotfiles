@@ -239,3 +239,7 @@ fi
 if [[ $do_cmd == "destroy" || $do_cmd == "d" ]]; then
     destroylab
 fi
+
+if [[ $do_cmd == "help" ]]; then
+  usage
+fi

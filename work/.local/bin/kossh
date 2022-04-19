@@ -5,12 +5,23 @@ clustername=$2
 other=$3
 uninstall=0
 
-ssh-keygen -f "$HOME/.ssh/known_hosts" -R "$ip"
+function usage() {
+  echo "Usage: kossh ip clustername other"
+  exit 0
+}
+
+if [[ $ip == "help" ]]; then
+  usage
+fi
 
 if [[ -z $ip ]]; then
   echo "IP address not passed."
+  echo ""
+  usage
   exit 1
 fi
+
+ssh-keygen -f "$HOME/.ssh/known_hosts" -R "$ip"
 
 if [[ $ip == "uninstall" ]]; then
   ip=$clustername
@@ -63,7 +74,7 @@ echo "Downloading k3s installer"
 _ssh curl https://get.k3s.io -o /tmp/install.sh
 
 echo "Installing k3s (1.21 channel, no traefik, embedded etcd)"
-_ssh sudo K3S_CHANNEL=v1.21 bash /tmp/install.sh --disable traefik --cluster-init
+_ssh sudo INSTALL_K3S_CHANNEL=v1.22 bash /tmp/install.sh --disable traefik --cluster-init
 
 echo "Grabbing kubeconfig"
 _ssh sudo cp /etc/rancher/k3s/k3s.yaml /tmp/k3s.yaml
