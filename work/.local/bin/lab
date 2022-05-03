@@ -65,7 +65,7 @@ check_fail_usage $? "Failed to parse arguments"
 vm_name_prefix="k3s-lab"
 vm_ip_base="172.20.0."
 vm_count=1
-target_host="pve2"
+target_host=""
 no_ack=0
 
 eval set -- "$parsed_args"
@@ -137,6 +137,19 @@ function buildlab() {
     fi
 
     targetdir="$workdir/$vm_name_prefix"
+
+    if [[ $target_host == "" ]]; then
+        echo "No target host... finding one"
+        pushd $HOME/dev/cluster-tools
+        bash find-node.sh $((4 * 1024)) /tmp/.lab-node
+        if [[ $? -ne "0" ]]; then
+            echo "Error finding new node."
+            exit 1
+        fi
+        target_host=$(cat /tmp/.lab-node)
+        echo "Using $target_host"
+        rm /tmp/.lab-node
+    fi
 
     echo "- Creating work directory if necessary"
     if [[ ! -d "$workdir" ]]; then

@@ -14,6 +14,7 @@ alias ka="kubectl apply"
 alias kdel="kubectl delete"
 alias c="code ."
 alias ins="instruqt"
+alias i="istioctl"
 function kns() {
   kubectl config set-context --current --namespace=$1
 }
