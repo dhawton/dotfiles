@@ -207,8 +207,8 @@ EOF
     terraform plan
     check_fail $? "Failed to run terraform plan"
 
-    do_promptyn "Do you want to run terraform apply?" "y" "run_terraform_apply"
-    if [[ $run_terraform_apply == "y" ]]; then
+#    do_promptyn "Do you want to run terraform apply?" "y" "run_terraform_apply"
+#    if [[ $run_terraform_apply == "y" ]]; then
         echo "- Running terraform apply"
         terraform apply -auto-approve
         check_fail $? "Failed to run terraform apply"
@@ -220,7 +220,7 @@ EOF
         echo "Instances created:"
         # Print names and IP addresses
         cat terraform.tfstate | jq -r '.resources[0].instances[] | "\(.attributes.name) \(.attributes.ssh_host)"'
-    fi
+#    fi
 }
 
 function destroylab() {
