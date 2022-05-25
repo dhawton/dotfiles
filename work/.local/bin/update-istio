@@ -1,0 +1,27 @@
+#!/bin/bash
+
+set -e
+
+version=$1
+
+if [[ $version == "" ]]; then
+  echo "Please supply version, ie, 1.13.3"
+  exit 1
+fi
+
+if [[ ! -d "$HOME/work/istio-$version" ]]; then
+  echo "- Version not found, downloading"
+  pushd /tmp
+  curl -fsSL https://github.com/istio/istio/releases/download/$version/istio-$version-linux-amd64.tar.gz -o /tmp/istio.tar.gz
+  echo "- Extracting"
+  tar -C $HOME/work -zxf /tmp/istio.tar.gz
+  rm /tmp/istio.tar.gz
+  popd
+fi
+
+pushd $HOME
+echo "- Removing current symlink"
+rm istio
+echo "- Creating new symlink"
+ln -s work/istio-$version istio
+popd
