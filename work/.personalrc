@@ -1,4 +1,4 @@
-export PATH="$HOME/istio/bin:/usr/local/go/bin:$HOME/.gloo/bin:$HOME/.local/bin:${KREW_ROOT:-$HOME/.krew}/bin:$HOME/.gloo-mesh/bin:$PATH"
+export PATH="$HOME/go/bin:$HOME/istio/bin:/usr/local/go/bin:$HOME/.gloo/bin:$HOME/.local/bin:${KREW_ROOT:-$HOME/.krew}/bin:$HOME/.gloo-mesh/bin:$PATH"
 
 eval "$(starship init bash)"
 
@@ -15,11 +15,9 @@ alias kdel="kubectl delete"
 alias c="code ."
 alias ins="instruqt"
 alias i="istioctl"
+alias w1="watch -d -n 1"
 function kns() {
   kubectl config set-context --current --namespace=$1
-}
-function oc() {
-  KUBECONFIG=$(cat ~/.occonfig) ~/.local/bin/oc "$@"
 }
 function update_kubeconfig() {
   DEFAULT_KUBECONFIG_FILE="$HOME/.kube/config"
@@ -39,20 +37,21 @@ function update_kubeconfig() {
   IFS="$OIFS"
 }
 function kc() {
-  update_kubeconfig
+#  update_kubeconfig
   kubectx
 }
 
 export AWS_PROFILE=work
 cd $HOME
 
-update_kubeconfig
+#update_kubeconfig
 source $HOME/.gloorc
 source <(kubectl completion bash)
 complete -F __start_kubectl k
+complete -F __start_kubectl kail
 
 # The next line updates PATH for the Google Cloud SDK.
-if [ -f "$HOME/.local/google-cloud-sdk/path.bash.inc" ]; then . "$HOME/.local/google-cloud-sdk/path.bash.inc"; fi
+if [ -f '$HOME/.local/google-cloud-sdk/path.bash.inc' ]; then . '$HOME/.local/google-cloud-sdk/path.bash.inc'; fi
 
 # The next line enables shell command completion for gcloud.
-if [ -f "$HOME/.local/google-cloud-sdk/completion.bash.inc" ]; then . "$HOME/.local/google-cloud-sdk/completion.bash.inc"; fi
+if [ -f '$HOME/.local/google-cloud-sdk/completion.bash.inc' ]; then . '$HOME/.local/google-cloud-sdk/completion.bash.inc'; fi

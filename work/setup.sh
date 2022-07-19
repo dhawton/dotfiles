@@ -1,7 +1,7 @@
 #!/bin/bash
 
 pwd=`pwd`
-istiover=1.11.5
+istiover=1.13.4
 
 function lnfile() {
   file=$1
@@ -47,6 +47,8 @@ curl -L https://istio.io/downloadIstio | ISTIO_VERSION=$istiover sh -
 echo "Setting up symlink used for path"
 
 ln -s "$HOME/work/istio-$istiover" "$HOME/istio"
+mkdir $HOME/dev
+ln -s "$pwd/cluster-tools" "$HOME/dev/cluster-tools"
 
 echo "Installing meshctl"
 
