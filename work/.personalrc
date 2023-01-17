@@ -16,8 +16,21 @@ alias c="code ."
 alias ins="instruqt"
 alias i="istioctl"
 alias w1="watch -d -n 1"
+alias kflat="kubectl config view --flatten > /tmp/kubeconfig && mv /tmp/kubeconfig $HOME/.kube/config"
+function kflatall() {
+  update_kubeconfig
+  kflat
+  export KUBECONFIG=$HOME/.kube/config
+  chmod 600 $HOME/.kube/config
+}
 function kns() {
   kubectl config set-context --current --namespace=$1
+}
+function gssh() {
+  vm=$1
+  shift
+  ip=$(gcloud compute instances list --filter="name=('$vm')" --format=json | jq -r .[0].networkInterfaces[0].accessConfigs[0].natIP)
+  ssh $ip $*
 }
 function update_kubeconfig() {
   DEFAULT_KUBECONFIG_FILE="$HOME/.kube/config"
@@ -42,16 +55,12 @@ function kc() {
 }
 
 export AWS_PROFILE=work
-cd $HOME
-
+#cd $HOME
 #update_kubeconfig
 source $HOME/.gloorc
 source <(kubectl completion bash)
 complete -F __start_kubectl k
 complete -F __start_kubectl kail
 
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '$HOME/.local/google-cloud-sdk/path.bash.inc' ]; then . '$HOME/.local/google-cloud-sdk/path.bash.inc'; fi
-
-# The next line enables shell command completion for gcloud.
-if [ -f '$HOME/.local/google-cloud-sdk/completion.bash.inc' ]; then . '$HOME/.local/google-cloud-sdk/completion.bash.inc'; fi
+. "$HOME/.local/google-cloud-sdk/path.bash.inc"
+. "$HOME/.local/google-cloud-sdk/completion.bash.inc"
