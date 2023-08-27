@@ -5,7 +5,11 @@ eval "$(starship init bash)"
 alias ac="docker run -it --rm -v ${HOME}:/work -w /work --entrypoint /bin/sh amazon/aws-cli:latest"
 alias rd="ssh 172.17.243.2 sudo pihole restartdns"
 alias k="kubectl"
+alias ls="ls --color=always"
 alias g="glooctl"
+alias gcb="git rev-parse --abbrev-ref HEAD"
+alias gco="git checkout"
+alias gcon="git checkout -b"
 alias kgp="kubectl get pod"
 alias kgn="kubectl get nodes"
 alias kd="kubectl describe"
@@ -15,8 +19,23 @@ alias kdel="kubectl delete"
 alias c="code ."
 alias ins="instruqt"
 alias i="istioctl"
-alias w1="watch -d -n 1"
+alias id="${HOME}/dev/istio/istio/out/linux_amd64/istioctl"
+alias w1="watch -d -n 1 "
 alias kflat="kubectl config view --flatten > /tmp/kubeconfig && mv /tmp/kubeconfig $HOME/.kube/config"
+alias istiotestkind="${HOME}/dev/istio/istio/prow/integ-suite-kind.sh --skip-build --skip-cleanup --kind-config ${HOME}/dev/istio/istio/prow/config/ambient-sc2.yaml"
+
+function gpush() {
+  git push origin $(git rev-parse --abbrev-ref HEAD) $@
+}
+
+function gpushf() {
+  gpush --force
+}
+
+function w1ct() {
+  read -p 'URL: ' url
+  w1 "curl $url | tail -n 40"
+}
 function kflatall() {
   update_kubeconfig
   kflat
@@ -59,8 +78,14 @@ export AWS_PROFILE=work
 #update_kubeconfig
 source $HOME/.gloorc
 source <(kubectl completion bash)
+source /usr/share/bash-completion/completions/git
+source ~/.bash_completion.d/complete_alias
 complete -F __start_kubectl k
-complete -F __start_kubectl kail
+complete -F _complete_alias kail
+complete -F _complete_alias kgp
+complete -F _complete_alias kgn
+complete -F _complete_alias ka
+complete -F _complete_alias kdel
 
 . "$HOME/.local/google-cloud-sdk/path.bash.inc"
 . "$HOME/.local/google-cloud-sdk/completion.bash.inc"
