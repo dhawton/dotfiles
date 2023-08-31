@@ -28,10 +28,15 @@ abbr kflat "kubectl config view --flatten > /tmp/kubeconfig && mv /tmp/kubeconfi
 abbr istiotestkind "$HOME/dev/istio/istio/prow/integ-suite-kind.sh --skip-build --skip-cleanup --kind-config $HOME/dev/istio/istio/prow/config/ambient-sc2.yaml"
 
 abbr gpush "git push origin (git rev-parse --abbrev-ref HEAD)"
-abbr gpushf "gpush --force"
+abbr gpushf "git push origin (git rev-parse --abbrev-ref HEAD) --force"
 abbr w1ct w1 "curl $argv | tail -n 40"
 abbr w1 "watch -d -n 1"
-abbr kc kubectx
+
+abbr dolc "doctl kubernetes cluster list"
+
+function dogcc
+  doctl kubernetes cluster kubeconfig show $argv[1] > ~/.kube/config-files/$argv[1].yaml
+end
 
 function update_kubeconfig
   set DEFAULT_KUBECONFIG_FILE "$HOME/.kube/config"
@@ -44,11 +49,20 @@ function update_kubeconfig
   end
 end
 
+function kflat
+  kubectl config view --flatten > /tmp/kubeconfig && mv /tmp/kubeconfig $HOME/.kube/config
+end
+
 function kflatall
   update_kubeconfig
   kflat
   export KUBECONFIG=$HOME/.kube/config
   chmod 600 $HOME/.kube/config
+end
+
+function kc
+  update_kubeconfig
+  kubectx
 end
 
 function gssh
