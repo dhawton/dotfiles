@@ -159,9 +159,6 @@ if [ ! -d $HOME/.fzf ]; then
 fi
 ~/.fzf/install --all
 
-# Check if ~/.zshenv exists, could be symlink, if not symlink to shell/.zshrc
-ln -s "$BASEDIR"/shell/.zshrc ~/.zshenv --force
-
 # Check if ~/.zshrc exists, could be symlink, if not symlink to shell/.zshrc
 ln -s "$BASEDIR"/shell/.zshrc ~/.zshrc --force
 
