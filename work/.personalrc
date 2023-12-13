@@ -1,4 +1,4 @@
-export PATH="$HOME/go/bin:$HOME/istio/bin:/usr/local/go/bin:$HOME/.gloo/bin:$HOME/.local/bin:${KREW_ROOT:-$HOME/.krew}/bin:$HOME/.gloo-mesh/bin:$PATH"
+export PATH="$HOME/.bin:$HOME/go/bin:$HOME/istio/bin:/usr/local/go/bin:$HOME/.gloo/bin:$HOME/.local/bin:${KREW_ROOT:-$HOME/.krew}/bin:$HOME/.gloo-mesh/bin:$PATH"
 
 eval "$(starship init bash)"
 

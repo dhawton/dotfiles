@@ -5,6 +5,6 @@ format = "[$user](bold red)[@](bold green)"
 [aws]
 format = "[AWS:($profile)](yellow) "
 [gcloud]
-format = "[GCP:($account@$domain)](red) "
+format = "[GCP:($account@$domain)/$project](red) "
 [git_branch]
 format = "[$symbol$branch]($style) "

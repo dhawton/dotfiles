@@ -1,7 +1,7 @@
 set krew_root $KREW_ROOT
 test -z "$krew_root"; and set krew_root "$HOME/.krew"
 
-set -gx PATH "$HOME/go/bin:$HOME/istio/bin:/usr/local/go/bin:$HOME/.gloo/bin:$HOME/.local/bin:$krew_root/bin:$HOME/.gloo-mesh/bin:$PATH"
+set -gx PATH "$HOME/.bin:$HOME/go/bin:$HOME/istio/bin:/usr/local/go/bin:$HOME/.gloo/bin:$HOME/.local/bin:$krew_root/bin:$HOME/.gloo-mesh/bin:$PATH"
 
 eval (/home/linuxbrew/.linuxbrew/bin/brew shellenv)
 starship init fish | source

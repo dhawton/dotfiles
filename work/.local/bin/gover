@@ -1,11 +1,20 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-VER=$1
+DEFAULT_VER=$(curl -s https://go.dev/dl/?mode=json | jq -r ".[0].version")
+VER=${1:-$DEFAULT_VER}
 
-echo "==> Downloading go$VER"
-wget https://golang.org/dl/go${VER}.linux-amd64.tar.gz -O /tmp/go.tar.gz
+OS=linux
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  OS=darwin
+fi
 
-if [[ $? -ne 0 ]]; then
+ARCH=amd64
+if [[ "$(uname -m)" == "arm64"* ]]; then
+  ARCH=arm64
+fi
+
+echo "==> Downloading $VER"
+if ! wget https://golang.org/dl/"${VER}.${OS}-${ARCH}".tar.gz -O /tmp/go.tar.gz; then
   echo "Had an issue getting the new go installer ($?)"
   exit 1
 fi
