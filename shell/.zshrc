@@ -1,11 +1,14 @@
-# Powerlevel10k
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
-export ZSH_THEME="powerlevel10k/powerlevel10k"
-export ZSH="$HOME/.oh-my-zsh"
 plugins=(git kubectl golang rust)
+export ZSH_THEME="powerlevel10k/powerlevel10k"
+export ZSH="/home/daniel/.oh-my-zsh"
 source $ZSH/oh-my-zsh.sh
+
+# Powerlevel10k
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # Don't make the terminal use vim keybindings
@@ -23,14 +26,6 @@ SAVEHIST=10000
 zstyle :compinstall filename "/home/daniel/.zshrc"
 autoload -Uz compinit
 compinit
-
-. "$HOME"/.asdf/asdf.sh
-# append completions to fpath
-fpath=(${ASDF_DIR}/completions $fpath)
-# initialise completions with ZSH's compinit
-autoload -Uz compinit && compinit
-
-export PATH="/home/daniel/.cargo/bin:$PATH"
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
