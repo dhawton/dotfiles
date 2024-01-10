@@ -2,6 +2,8 @@ alias rd="ssh 172.17.243.2 sudo pihole restartdns"
 alias w1="watch -n 1"
 alias w1d="watch -d -n 1"
 alias dolc="doctl kubernetes cluster list"
+alias kg="kubectl get"
+alias kgn="kubectl get nodes"
 
 doas() {
   if [[ -z "${1:-}" ]]; then
