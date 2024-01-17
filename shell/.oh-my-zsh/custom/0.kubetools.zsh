@@ -25,8 +25,12 @@ dogcc() {
 
 update_kubeconfig() {
   export DEFAULT_KUBECONFIG_FILE="$HOME/.kube/config"
-  if -f "$DEFAULT_KUBECONFIG_FILE"; then
+  if [[ -f "$DEFAULT_KUBECONFIG_FILE" ]]; then
     export KUBECONFIG="$DEFAULT_KUBECONFIG_FILE"
+  fi
+
+  if [[ ! -d "$HOME/.kube/config-files" ]]; then
+    mkdir "$HOME/.kube/config-files"
   fi
 
   for kubeconfig_file in $(find $HOME/.kube/config-files -type f -name "*.yaml"); do
