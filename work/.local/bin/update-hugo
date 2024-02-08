@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+set -ex
+
+version=${1:-$(curl -s https://api.github.com/repos/gohugoio/hugo/releases/latest | jq -r .tag_name)}
+install_dir=${2:-"$HOME/.local/bin"}
+os="linux"
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  os="darwin"
+elif [[ "$OSTYPE" == "msys" ]]; then
+  os="windows"
+fi
+arch="amd64"
+if [[ "$OSTYPE" == "darwin" ]]; then
+  arch="universal"
+fi
+
+tmp_dir=$(mktemp -d)
+pushd $tmp_dir || exit 1
+
+version_sans_v=${version#v}
+curl -sL "https://github.com/gohugoio/hugo/releases/download/$version/hugo_extended_${version_sans_v}_$os-$arch.tar.gz" | tar -xz
+mv hugo $install_dir
+hugo version
+
+popd || exit 1
+rm -rf $tmp_dir
