@@ -14,8 +14,8 @@ git submodule update --init --recursive
 
 sudo echo "Ready to install"
 # Install dependencies
-command -v apt-get && sudo apt-get update -y && sudo apt-get install -y git python3-pip build-essential libncurses5-dev libncursesw5-dev libssl-dev autoconf automake
-command -v dnf && sudo dnf update -y && sudo dnf install -y git pip ncurses-devel ncurses openssl-devel automake autoconf g++ && sudo dnf -y groupinstall "Development Tools"
+command -v apt-get && sudo apt-get update -y && sudo apt-get install -y git python3-pip build-essential libncurses5-dev libncursesw5-dev libssl-dev autoconf automake curl zsh
+command -v dnf && sudo dnf update -y && sudo dnf install -y git pip ncurses-devel ncurses openssl-devel automake autoconf g++ curl zsh && sudo dnf -y groupinstall "Development Tools"
 
 # Install asdf
 if [[ -d "$HOME"/.asdf ]]; then
