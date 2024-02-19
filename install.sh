@@ -165,7 +165,11 @@ fi
 ~/.fzf/install --all
 
 # install oh-my-zsh
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+
+# Set zsh to default shell
+zsh_path=$(which zsh | awk '{print $2}')
+chsh -s "$zsh_path"
 
 # Check if ~/.zshrc exists, could be symlink, if not symlink to shell/.zshrc
 ln -s "$BASEDIR"/shell/.zshrc ~/.zshrc --force
@@ -178,3 +182,6 @@ ln -s "$BASEDIR"/shell/.oh-my-zsh/custom ~/.oh-my-zsh/custom --force
 
 # Lastly ~/.p10k.zsh
 ln -s "$BASEDIR"/shell/.p10k.zsh ~/.p10k.zsh --force
+
+# Last, but not least, start the new shell
+zsh
