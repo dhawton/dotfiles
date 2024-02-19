@@ -164,6 +164,9 @@ if [ ! -d $HOME/.fzf ]; then
 fi
 ~/.fzf/install --all
 
+# install oh-my-zsh
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
 # Check if ~/.zshrc exists, could be symlink, if not symlink to shell/.zshrc
 ln -s "$BASEDIR"/shell/.zshrc ~/.zshrc --force
 
