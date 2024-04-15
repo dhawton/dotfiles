@@ -16,6 +16,7 @@ sudo echo "Ready to install"
 # Install dependencies
 command -v apt-get && sudo apt-get update -y && sudo apt-get install -y git python3-pip build-essential libncurses5-dev libncursesw5-dev libssl-dev autoconf automake curl zsh
 command -v dnf && sudo dnf update -y && sudo dnf install -y git pip ncurses-devel ncurses openssl-devel automake autoconf g++ curl zsh && sudo dnf -y groupinstall "Development Tools"
+command -v zypper && sudo zypper dup && sudo zypper in -y git python311-pip ncurses-devel ncurses openssl-devel automake autoconf gcc gcc-c++ curl zsh && sudo zypper install --type pattern devel_basis
 
 # Install asdf
 if [[ -d "$HOME"/.asdf ]]; then
@@ -58,16 +59,16 @@ if [[ -z "${SKIP_SOFTWARE:-}" ]]; then
   brew install doctl
 
   # Erlang+elixir
-  command -v apt-get || sudo apt-get update -y && sudo apt-get install -y unzip
-  command -v dnf || sudo dnf update -y && sudo dnf install -y unzip
-  asdf plugin add erlang https://github.com/asdf-vm/asdf-erlang.git
-  asdf plugin add elixir https://github.com/asdf-vm/asdf-elixir.git
-
-  asdf install erlang latest
-  asdf install elixir latest
-
-  asdf global erlang latest
-  asdf global elixir latest
+#  command -v apt-get || sudo apt-get update -y && sudo apt-get install -y unzip
+#  command -v dnf || sudo dnf update -y && sudo dnf install -y unzip
+#  asdf plugin add erlang https://github.com/asdf-vm/asdf-erlang.git
+#  asdf plugin add elixir https://github.com/asdf-vm/asdf-elixir.git
+#
+#  asdf install erlang latest
+#  asdf install elixir latest
+#
+#  asdf global erlang latest
+#  asdf global elixir latest
 
   # Install some other pre-reqs
   brew install jq
@@ -84,6 +85,10 @@ if [[ -z "${SKIP_SOFTWARE:-}" ]]; then
     sudo dnf install 'dnf-command(config-manager)'
     sudo dnf config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo
     sudo dnf install -y gh
+  elif command -v zypper >/dev/null 2>&1; then
+    sudo zypper addrepo https://cli.github.com/packages/rpm/gh-cli.repo || true
+    sudo zypper refresh
+    sudo zypper install -y gh
   else
     echo "Unsupported system."
     exit 1
@@ -130,9 +135,9 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 source "$HOME/.cargo/env"
 
 # Install node
-asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git
-asdf install nodejs latest
-asdf global nodejs latest
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
 
 # Install other tools
 if [[ -z "${SKIP_SOFTWARE:-}" ]]; then
@@ -151,6 +156,8 @@ if command -v apt >> /dev/null; then
   sudo apt install -y screen
 elif command -v dnf >> /dev/null; then
   sudo dnf install -y screen
+elif command -v zypper >> /dev/null; then
+  sudo zypper install -y screen
 fi
 
 if [[ -z "${SKIP_SOFTWARE:-}" ]]; then
