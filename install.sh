@@ -14,17 +14,9 @@ git submodule update --init --recursive
 
 sudo echo "Ready to install"
 # Install dependencies
-command -v apt-get && sudo apt-get update -y && sudo apt-get install -y git python3-pip build-essential libncurses5-dev libncursesw5-dev libssl-dev autoconf automake curl zsh
+command -v apt-get && sudo add-apt-repository ppa:zhangsongcui3371/fastfetch && sudo apt-get update -y && sudo apt-get install -y git python3-pip build-essential libncurses5-dev libncursesw5-dev libssl-dev autoconf automake curl zsh fastfetch
 command -v dnf && sudo dnf update -y && sudo dnf install -y git pip ncurses-devel ncurses openssl-devel automake autoconf g++ curl zsh && sudo dnf -y groupinstall "Development Tools"
-command -v zypper && sudo zypper dup && sudo zypper in -y git python311-pip ncurses-devel ncurses openssl-devel automake autoconf gcc gcc-c++ curl zsh && sudo zypper install --type pattern devel_basis
-
-# Install asdf
-if [[ -d "$HOME"/.asdf ]]; then
-  rm -rf "$HOME"/.asdf
-fi
-
-git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.13.1
-source "$HOME"/.asdf/asdf.sh
+command -v zypper && sudo zypper dup && sudo zypper in -y git python311-pip ncurses-devel ncurses openssl-devel automake autoconf gcc gcc-c++ curl zsh fastfetch && sudo zypper install --type pattern devel_basis
 
 if [[ -z "${SKIP_SOFTWARE:-}" ]]; then
   # Install homebrew
@@ -57,18 +49,6 @@ if [[ -z "${SKIP_SOFTWARE:-}" ]]; then
 
   # Install doctl
   brew install doctl
-
-  # Erlang+elixir
-#  command -v apt-get || sudo apt-get update -y && sudo apt-get install -y unzip
-#  command -v dnf || sudo dnf update -y && sudo dnf install -y unzip
-#  asdf plugin add erlang https://github.com/asdf-vm/asdf-erlang.git
-#  asdf plugin add elixir https://github.com/asdf-vm/asdf-elixir.git
-#
-#  asdf install erlang latest
-#  asdf install elixir latest
-#
-#  asdf global erlang latest
-#  asdf global elixir latest
 
   # Install some other pre-reqs
   brew install jq
