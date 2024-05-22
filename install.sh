@@ -182,10 +182,10 @@ chsh -s "$zsh_path"
 ln -s "$BASEDIR"/shell/.zshrc ~/.zshrc --force
 
 # Same with .oh-my-zsh/custom
-if [[ -d ~/.oh-my-zsh/custom ]]; then
-  rm -rf ~/.oh-my-zsh/custom
-fi
-ln -s "$BASEDIR"/shell/.oh-my-zsh/custom ~/.oh-my-zsh/custom --force
+#if [[ -d ~/.oh-my-zsh/custom ]]; then
+#  rm -rf ~/.oh-my-zsh/custom
+#fi
+ln -s "$BASEDIR"/shell/.oh-my-zsh/custom ~/.oh-my-zsh-custom --force
 
 # Lastly ~/.p10k.zsh
 ln -s "$BASEDIR"/shell/.p10k.zsh ~/.p10k.zsh --force
