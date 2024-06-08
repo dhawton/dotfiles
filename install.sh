@@ -13,6 +13,7 @@ cd "${BASEDIR}"
 git submodule update --init --recursive 
 
 sudo echo "Ready to install"
+if [[ -z "${SHELL_ONLY:-}" ]]; then
 # Install dependencies
 command -v apt-get && sudo add-apt-repository ppa:zhangsongcui3371/fastfetch && sudo apt-get update -y && sudo apt-get install -y git python3-pip build-essential libncurses5-dev libncursesw5-dev libssl-dev autoconf automake curl zsh fastfetch
 command -v dnf && sudo dnf update -y && sudo dnf install -y git pip ncurses-devel ncurses openssl-devel automake autoconf g++ curl zsh && sudo dnf -y groupinstall "Development Tools"
@@ -150,13 +151,10 @@ if [ ! -d $HOME/.fzf ]; then
   git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
 fi
 ~/.fzf/install --all
+fi #Shell Only
 
 # install oh-my-zsh
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-
-# Set zsh to default shell
-zsh_path=$(which zsh | awk '{print $2}')
-chsh -s "$zsh_path"
 
 # Check if ~/.zshrc exists, could be symlink, if not symlink to shell/.zshrc
 ln -s "$BASEDIR"/shell/.zshrc ~/.zshrc --force
