@@ -129,9 +129,6 @@ if [[ -z "${SKIP_SOFTWARE:-}" ]]; then
   brew install kubectx
 fi
 go install github.com/mikefarah/yq/v4@latest
-cargo install bottom
-cargo install bat
-cargo install ripgrep
 
 if command -v apt >> /dev/null; then
   sudo apt install -y screen
