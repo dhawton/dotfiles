@@ -1,2 +1,5 @@
-export EDITOR=nano
-export VISUAL=nano
+export EDITOR=nvim
+export VISUAL=nvim
+
+alias n.="nvim ."
+alias n="nvim"
