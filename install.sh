@@ -126,6 +126,7 @@ if [[ -z "${SHELL_ONLY:-}" ]]; then
     brew install kubectl
     brew install fzf
     brew install kubectx
+    brew install neovim
   fi
   go install github.com/mikefarah/yq/v4@latest
 
@@ -163,6 +164,12 @@ ln -s "$BASEDIR"/shell/.oh-my-zsh/custom ~/.oh-my-zsh-custom --force
 
 # Lastly ~/.p10k.zsh
 ln -s "$BASEDIR"/shell/.p10k.zsh ~/.p10k.zsh --force
+
+# neovim
+if [[ ! -d "~/.config" ]]; then
+  mkdir ~/.config
+fi
+ln -s "$BASEDIR"/nvim ~/.config/nvim
 
 # Last, but not least, start the new shell
 zsh
