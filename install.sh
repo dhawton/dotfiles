@@ -171,5 +171,4 @@ if [[ ! -d "~/.config" ]]; then
 fi
 ln -s "$BASEDIR"/nvim ~/.config/nvim
 
-# Last, but not least, start the new shell
-zsh
+echo "Log back in or type \"zsh\" to continue."
