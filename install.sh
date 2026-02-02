@@ -16,7 +16,7 @@ sudo echo "Ready to install"
 if [[ -z "${SHELL_ONLY:-}" ]]; then
   # Install dependencies
   command -v apt-get && sudo add-apt-repository -y ppa:zhangsongcui3371/fastfetch && sudo apt-get update -y && sudo apt-get install -y git python3-pip build-essential libncurses5-dev libncursesw5-dev libssl-dev autoconf automake curl zsh fastfetch unzip
-  command -v dnf && sudo dnf update -y && sudo dnf install -y git pip ncurses-devel ncurses openssl-devel automake autoconf g++ curl zsh && sudo dnf -y groupinstall "Development Tools"
+  command -v dnf && sudo dnf update -y && sudo dnf install -y git pip ncurses-devel ncurses openssl-devel automake autoconf gcc-c++ curl zsh && (sudo dnf -y group install "Development Tools" || sudo dnf -y groupinstall "Development Tools")
   command -v zypper && sudo zypper dup && sudo zypper in -y git python311-pip ncurses-devel ncurses openssl-devel automake autoconf gcc gcc-c++ curl zsh fastfetch && sudo zypper install --type pattern devel_basis
 
   if [[ -z "${SKIP_SOFTWARE:-}" ]]; then
@@ -167,7 +167,7 @@ ln -s "$BASEDIR"/shell/.p10k.zsh ~/.p10k.zsh --force
 
 # neovim
 if [[ ! -d "~/.config" ]]; then
-  mkdir ~/.config
+  mkdir ~/.config || true
 fi
 ln -s "$BASEDIR"/nvim ~/.config/nvim
 
