@@ -16,7 +16,7 @@ sudo echo "Ready to install"
 if [[ -z "${SHELL_ONLY:-}" ]]; then
   # Install dependencies
   command -v apt-get && sudo add-apt-repository -y ppa:zhangsongcui3371/fastfetch && sudo apt-get update -y && sudo apt-get install -y git python3-pip build-essential libncurses5-dev libncursesw5-dev libssl-dev autoconf automake curl zsh fastfetch unzip
-  command -v dnf && sudo dnf update -y && sudo dnf install -y git pip ncurses-devel ncurses openssl-devel automake autoconf gcc-c++ curl zsh && (sudo dnf -y group install "Development Tools" || sudo dnf -y groupinstall "Development Tools")
+  command -v dnf && sudo dnf update -y && sudo dnf install -y git pip ncurses-devel ncurses openssl-devel automake autoconf gcc-c++ curl zsh && { sudo dnf -y group install development-tools || sudo dnf -y groupinstall "Development Tools"; }
   command -v zypper && sudo zypper dup && sudo zypper in -y git python311-pip ncurses-devel ncurses openssl-devel automake autoconf gcc gcc-c++ curl zsh fastfetch && sudo zypper install --type pattern devel_basis
 
   if [[ -z "${SKIP_SOFTWARE:-}" ]]; then
@@ -62,9 +62,7 @@ if [[ -z "${SHELL_ONLY:-}" ]]; then
         sudo apt update &&
         sudo apt install gh -y
     elif command -v dnf >/dev/null 2>&1; then
-      sudo dnf install 'dnf-command(config-manager)'
-      sudo dnf config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo
-      sudo dnf install -y gh
+      sudo curl -o /etc/yum.repos.d/gh-cli.repo https://cli.github.com/packages/rpm/gh-cli.repo
     elif command -v zypper >/dev/null 2>&1; then
       sudo zypper addrepo https://cli.github.com/packages/rpm/gh-cli.repo || true
       sudo zypper refresh
