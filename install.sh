@@ -16,7 +16,7 @@ sudo echo "Ready to install"
 if [[ -z "${SHELL_ONLY:-}" ]]; then
   # Install dependencies
   command -v apt-get && sudo add-apt-repository -y ppa:zhangsongcui3371/fastfetch && sudo apt-get update -y && sudo apt-get install -y git python3-pip build-essential libncurses5-dev libncursesw5-dev libssl-dev autoconf automake curl zsh fastfetch unzip
-  command -v dnf && sudo dnf update -y && sudo dnf install -y git pip ncurses-devel ncurses openssl-devel automake autoconf gcc-c++ curl zsh && { sudo dnf -y group install development-tools || sudo dnf -y groupinstall "Development Tools"; }
+  command -v dnf && sudo dnf update -y && sudo dnf install -y git pip ncurses-devel ncurses openssl-devel automake autoconf g++ curl zsh
   command -v zypper && sudo zypper dup && sudo zypper in -y git python311-pip ncurses-devel ncurses openssl-devel automake autoconf gcc gcc-c++ curl zsh fastfetch && sudo zypper install --type pattern devel_basis
 
   if [[ -z "${SKIP_SOFTWARE:-}" ]]; then
@@ -54,23 +54,7 @@ if [[ -z "${SHELL_ONLY:-}" ]]; then
     brew install jq
 
     # github cli
-    if command -v apt-get >/dev/null 2>&1; then
-      type -p curl >/dev/null || (sudo apt update && sudo apt install curl -y)
-      curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg &&
-        sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg &&
-        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list >/dev/null &&
-        sudo apt update &&
-        sudo apt install gh -y
-    elif command -v dnf >/dev/null 2>&1; then
-      sudo curl -o /etc/yum.repos.d/gh-cli.repo https://cli.github.com/packages/rpm/gh-cli.repo
-    elif command -v zypper >/dev/null 2>&1; then
-      sudo zypper addrepo https://cli.github.com/packages/rpm/gh-cli.repo || true
-      sudo zypper refresh
-      sudo zypper install -y gh
-    else
-      echo "Unsupported system."
-      exit 1
-    fi
+    brew install gh
 
     # Install go
     DEFAULT_VER=$(curl -s https://go.dev/dl/?mode=json | jq -r ".[0].version")

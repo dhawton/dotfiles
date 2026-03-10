@@ -8,7 +8,7 @@ export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
-plugins=(git kubectl golang rust)
+plugins=(dh-git kubectl golang rust)
 export ZSH_CUSTOM="$HOME/.oh-my-zsh-custom"
 export ZSH_THEME="powerlevel10k/powerlevel10k"
 export ZSH="/home/daniel/.oh-my-zsh"
@@ -65,3 +65,5 @@ if ! pgrep -u "$USER" ssh-agent > /dev/null; then
     eval "$(ssh-agent -s)"
     ssh-add ~/.ssh/id_ed25519
 fi
+export LESS="-F -X $LESS"
+export GOPRIVATE=github.com/solo-io
