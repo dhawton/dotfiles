@@ -1,3 +1,5 @@
+# Add deno completions to search path
+if [[ ":$FPATH:" != *":/home/daniel/.zsh/completions:"* ]]; then export FPATH="/home/daniel/.zsh/completions:$FPATH"; fi
 # Check if fastfetch exists, and if so, run it
 if command -v fastfetch >> /dev/null; then
   fastfetch
@@ -10,7 +12,11 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
 fi
 plugins=(dh-git kubectl golang rust)
 export ZSH_CUSTOM="$HOME/.oh-my-zsh-custom"
-export ZSH_THEME="powerlevel10k/powerlevel10k"
+if [[ "$TERM_PROGRAM" == "vscode" ]]; then
+  export ZSH_THEME=""
+else
+  export ZSH_THEME="powerlevel10k/powerlevel10k"
+fi
 export ZSH="/home/daniel/.oh-my-zsh"
 source $ZSH/oh-my-zsh.sh
 
@@ -67,3 +73,9 @@ if ! pgrep -u "$USER" ssh-agent > /dev/null; then
 fi
 export LESS="-F -X $LESS"
 export GOPRIVATE=github.com/solo-io
+
+alias lfrpdb="mariadb --host 127.0.0.1 -u lfrp -p --ssl=0"
+. "/home/daniel/.deno/env"
+
+# nightly `deno upgrade` (machine-local; guarded so it's a no-op elsewhere)
+[[ -f "$HOME/.config/deno-nightly/hook.zsh" ]] && . "$HOME/.config/deno-nightly/hook.zsh"
