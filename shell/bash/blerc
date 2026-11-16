@@ -1,0 +1,24 @@
+# ble.sh settings (loaded by .bashrc with --rcfile). Docs: https://github.com/akinomyoga/ble.sh/wiki
+
+# Like p10k's transient prompt: old prompts shrink to "❯ command" once you press Enter.
+bleopt prompt_ps1_transient=trim
+bleopt prompt_ps1_final='$(starship module character)'
+
+# Share history between open terminals, like zsh's SHARE_HISTORY.
+bleopt history_share=1
+
+# No bell, no "[ble: exit 1]" line after a failed command (the prompt already shows ✘).
+bleopt edit_abell=
+bleopt edit_vbell=
+bleopt exec_errexit_mark=
+
+# Grey suggestions from history as you type (accept with → or End), like zsh-autosuggestions.
+bleopt complete_auto_complete=1
+bleopt complete_auto_history=1
+
+# Tab menu like oh-my-zsh: case-insensitive, select with arrows.
+bleopt complete_menu_style=align-nowrap
+bind 'set completion-ignore-case on'
+
+# Emacs keys (zsh had bindkey -e).
+set -o emacs

@@ -79,3 +79,9 @@ alias lfrpdb="mariadb --host 127.0.0.1 -u lfrp -p --ssl=0"
 
 # nightly `deno upgrade` (machine-local; guarded so it's a no-op elsewhere)
 [[ -f "$HOME/.config/deno-nightly/hook.zsh" ]] && . "$HOME/.config/deno-nightly/hook.zsh"
+
+# Flutter and Android: Flutter in ~/development/flutter, the Android SDK in
+# ~/Android/Sdk, JDK 17 for Gradle.
+export ANDROID_HOME="$HOME/Android/Sdk"
+export JAVA_HOME="/usr/lib64/jvm/java-17-openjdk"
+export PATH="$HOME/development/flutter/bin:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH"

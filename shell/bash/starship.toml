@@ -1,0 +1,156 @@
+# Starship prompt, made to look like the old powerlevel10k "lean" setup (.p10k.zsh):
+#   line 1:  os icon, user@host, folder, git ........ error, took 5s, jobs, versions, at 12:34:56
+#   line 2:  ❯
+# The right side is on line 1 ($fill), like p10k. Colors are the same 256-color numbers as in .p10k.zsh.
+"$schema" = 'https://starship.rs/config-schema.json'
+
+add_newline = false
+command_timeout = 1000
+
+format = """
+$os\
+$username\
+$hostname\
+$directory\
+$git_branch\
+$git_state\
+$git_status\
+$fill\
+$status\
+$cmd_duration\
+$jobs\
+$python\
+$nodejs\
+$golang\
+$rust\
+$php\
+$time
+$character"""
+
+[fill]
+symbol = ' '
+
+[os]
+disabled = false
+format = '$symbol'
+
+[os.symbols]
+openSUSE = ' '
+Linux = ' '
+Macos = ' '
+Windows = ' '
+Debian = ' '
+Ubuntu = ' '
+NixOS = ' '
+
+[username]
+format = '[$user]($style)'
+style_user = '180'
+style_root = '178'
+show_always = true
+
+[hostname]
+format = '[@$hostname]($style) '
+style = '180'
+ssh_only = false
+
+[directory]
+format = '[ ]($style)[$path]($style)[$read_only]($read_only_style) '
+style = '31'
+repo_root_style = 'bold 39'
+before_repo_root_style = '31'
+truncation_length = 0
+truncate_to_repo = false
+read_only = ' '
+read_only_style = '31'
+
+[git_branch]
+format = 'on [$symbol$branch(:$remote_branch)]($style) '
+symbol = ' '
+style = '76'
+only_attached = false
+
+[git_state]
+format = '[$state( $progress_current/$progress_total)]($style) '
+style = '196'
+
+[git_status]
+format = '([$ahead_behind$stashed$conflicted$staged$modified$untracked]($style))'
+style = '76'
+ahead = '[⇡${count}](76) '
+behind = '[⇣${count}](76) '
+diverged = '[⇣${behind_count}⇡${ahead_count}](76) '
+stashed = '[*${count}](76) '
+conflicted = '[~${count}](196) '
+staged = '[+${count}](178) '
+modified = '[!${count}](178) '
+untracked = '[?${count}](39) '
+deleted = ''
+renamed = ''
+up_to_date = ''
+
+[status]
+disabled = false
+format = '[✘ $status]($style) '
+style = '160'
+map_symbol = false
+pipestatus = true
+pipestatus_format = '[✘ $pipestatus]($style) '
+pipestatus_segment_format = '$status'
+pipestatus_separator = '|'
+
+[cmd_duration]
+min_time = 3_000
+format = 'took [$duration]($style) '
+style = '101'
+
+[jobs]
+format = '[$symbol$number]($style) '
+symbol = ' '
+style = '70'
+number_threshold = 2
+
+[python]
+format = '[$symbol$virtualenv]($style) '
+symbol = ' '
+style = '37'
+detect_extensions = []
+detect_files = []
+detect_folders = []
+
+[nodejs]
+format = '[$symbol$version]($style) '
+symbol = ' '
+style = '70'
+detect_extensions = []
+
+[golang]
+format = '[$symbol$version]($style) '
+symbol = ' '
+style = '37'
+detect_extensions = []
+
+[rust]
+format = '[$symbol$version]($style) '
+symbol = ' '
+style = '37'
+detect_extensions = []
+
+[php]
+format = '[$symbol$version]($style) '
+symbol = ' '
+style = '99'
+detect_extensions = []
+
+[time]
+disabled = false
+format = '[at ](none)[ $time]($style)'
+style = '66'
+time_format = '%H:%M:%S'
+
+[character]
+success_symbol = '[❯](76)'
+error_symbol = '[❯](196)'
+vimcmd_symbol = '[❮](76)'
+vimcmd_visual_symbol = '[V](76)'
+vimcmd_replace_symbol = '[▶](76)'
