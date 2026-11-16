@@ -85,3 +85,5 @@ alias lfrpdb="mariadb --host 127.0.0.1 -u lfrp -p --ssl=0"
 export ANDROID_HOME="$HOME/Android/Sdk"
 export JAVA_HOME="/usr/lib64/jvm/java-17-openjdk"
 export PATH="$HOME/development/flutter/bin:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH"
+# Istio build containers (common/scripts/run.sh): mount SSH key so git push works inside
+export DOCKER_RUN_OPTIONS="-v $HOME/.ssh:/home/.ssh:ro"
