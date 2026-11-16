@@ -1,0 +1,21 @@
+# ~/.inputrc (symlink to dotfiles/shell/bash/inputrc). Readline keys for bash when ble.sh is not loaded.
+$include /etc/inputrc
+
+set editing-mode emacs
+set bell-style none
+
+# Completion like oh-my-zsh: case-insensitive, - and _ count as the same, list at once, colors.
+set completion-ignore-case on
+set completion-map-case on
+set show-all-if-ambiguous on
+set colored-stats on
+set colored-completion-prefix on
+set mark-symlinked-directories on
+set menu-complete-display-prefix on
+
+# Up and Down search history for what you already typed (like oh-my-zsh).
+"\e[A": history-search-backward
+"\e[B": history-search-forward
+# Ctrl+Left and Ctrl+Right move by word.
+"\e[1;5D": backward-word
+"\e[1;5C": forward-word

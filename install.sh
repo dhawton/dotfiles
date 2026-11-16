@@ -15,9 +15,9 @@ git submodule update --init --recursive
 sudo echo "Ready to install"
 if [[ -z "${SHELL_ONLY:-}" ]]; then
   # Install dependencies
-  command -v apt-get && sudo add-apt-repository -y ppa:zhangsongcui3371/fastfetch && sudo apt-get update -y && sudo apt-get install -y git python3-pip build-essential libncurses5-dev libncursesw5-dev libssl-dev autoconf automake curl zsh fastfetch unzip
-  command -v dnf && sudo dnf update -y && sudo dnf install -y git pip ncurses-devel ncurses openssl-devel automake autoconf g++ curl zsh
-  command -v zypper && sudo zypper dup && sudo zypper in -y git python311-pip ncurses-devel ncurses openssl-devel automake autoconf gcc gcc-c++ curl zsh fastfetch && sudo zypper install --type pattern devel_basis
+  command -v apt-get && sudo add-apt-repository -y ppa:zhangsongcui3371/fastfetch && sudo apt-get update -y && sudo apt-get install -y git python3-pip build-essential libncurses5-dev libncursesw5-dev libssl-dev autoconf automake curl xz-utils fastfetch unzip
+  command -v dnf && sudo dnf update -y && sudo dnf install -y git pip ncurses-devel ncurses openssl-devel automake autoconf g++ curl xz
+  command -v zypper && sudo zypper dup && sudo zypper in -y git python311-pip ncurses-devel ncurses openssl-devel automake autoconf gcc gcc-c++ curl xz fastfetch && sudo zypper install --type pattern devel_basis
 
   if [[ -z "${SKIP_SOFTWARE:-}" ]]; then
     # Install homebrew
@@ -129,23 +129,12 @@ if [[ -z "${SHELL_ONLY:-}" ]]; then
   if [ ! -d $HOME/.fzf ]; then
     git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
   fi
-  ~/.fzf/install --all
+  ~/.fzf/install --key-bindings --completion --no-update-rc # .bashrc lives in git; it loads ~/.fzf.bash
 fi #Shell Only
 
-# install oh-my-zsh
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-
-# Check if ~/.zshrc exists, could be symlink, if not symlink to shell/.zshrc
-ln -s "$BASEDIR"/shell/.zshrc ~/.zshrc --force
-
-# Same with .oh-my-zsh/custom
-#if [[ -d ~/.oh-my-zsh/custom ]]; then
-#  rm -rf ~/.oh-my-zsh/custom
-#fi
-ln -s "$BASEDIR"/shell/.oh-my-zsh/custom ~/.oh-my-zsh-custom --force
-
-# Lastly ~/.p10k.zsh
-ln -s "$BASEDIR"/shell/.p10k.zsh ~/.p10k.zsh --force
+# Shell: bash + starship + ble.sh (shell/bash/install.sh). The old zsh setup (shell/.zshrc, .p10k.zsh,
+# .oh-my-zsh/custom) stays in the repo for now but is no longer installed.
+"$BASEDIR"/shell/bash/install.sh
 
 # neovim
 if [[ ! -d "~/.config" ]]; then
@@ -153,4 +142,4 @@ if [[ ! -d "~/.config" ]]; then
 fi
 ln -s "$BASEDIR"/nvim ~/.config/nvim
 
-echo "Log back in or type \"zsh\" to continue."
+echo "Log back in or type \"bash\" to continue. To make bash the login shell: chsh -s /bin/bash"

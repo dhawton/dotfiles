@@ -1,0 +1,5 @@
+# ~/.bash_profile (symlink to dotfiles/shell/bash/bash_profile). A login bash (WSL, SSH, a new terminal) reads this
+# file and skips ~/.profile and ~/.bashrc, so it loads both. .bashrc loads only once, even if ~/.profile or
+# /etc/profile also loads it.
+[[ -f "$HOME/.profile" ]] && . "$HOME/.profile"
+[[ -f "$HOME/.bashrc" ]] && . "$HOME/.bashrc"
