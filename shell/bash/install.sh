@@ -7,7 +7,8 @@
 #   --no-history  do not copy the zsh history into ~/.bash_history
 #
 # Safe to run again: it skips what is already done. Old files get a backup named <file>.pre-dotfiles.<date>.
-# Needs Linux, curl, tar and xz. Uses Homebrew when it is there; otherwise it puts starship in ~/.local/bin.
+# Works on Linux and macOS. Needs curl, tar and xz. Uses Homebrew when it is there; otherwise (Linux only) it puts
+# starship in ~/.local/bin. On macOS it needs Homebrew, and it installs Homebrew's bash 5 (macOS's /bin/bash is 3.2).
 
 set -euo pipefail
 
@@ -27,26 +28,35 @@ done
 say() { printf '\033[1;34m==>\033[0m %s\n' "$*"; }
 warn() { printf '\033[1;33m==>\033[0m %s\n' "$*" >&2; }
 
-if [[ "$(uname)" != Linux ]]; then
-  echo "Only Linux is supported." >&2
-  exit 1
-fi
+OS="$(uname)"
+case "$OS" in
+  Linux | Darwin) ;;
+  *) echo "Only Linux and macOS are supported." >&2; exit 1 ;;
+esac
 
 # --- tools -------------------------------------------------------------------------------------------------------
 
-for b in /home/linuxbrew/.linuxbrew/bin/brew "$HOME/.linuxbrew/bin/brew"; do
+for b in /opt/homebrew/bin/brew /usr/local/bin/brew /home/linuxbrew/.linuxbrew/bin/brew "$HOME/.linuxbrew/bin/brew"; do
   [[ -x "$b" ]] && eval "$("$b" shellenv)" && break
 done
+
+if [[ $OS == Darwin ]] && ! command -v brew >/dev/null; then
+  echo "macOS needs Homebrew first: https://brew.sh" >&2
+  exit 1
+fi
 
 have() { # have <formula>: true when the tool is already there
   case "$1" in
     bash-completion@2) [[ -r "$HOMEBREW_PREFIX/etc/profile.d/bash_completion.sh" ]] ;;
+    bash) [[ -x "$HOMEBREW_PREFIX/bin/bash" ]] ;;
     *) command -v "$1" >/dev/null ;;
   esac
 }
 
 if command -v brew >/dev/null; then
-  for f in starship bash-completion@2 fzf; do
+  formulas=(starship bash-completion@2 fzf)
+  [[ $OS == Darwin ]] && formulas=(bash "${formulas[@]}")
+  for f in "${formulas[@]}"; do
     if have "$f"; then
       say "$f is already installed"
     else
@@ -97,13 +107,15 @@ link inputrc "$HOME/.inputrc"
 # --- history -----------------------------------------------------------------------------------------------------
 
 # zsh writes ": <time>:0;<command>"; bash with HISTTIMEFORMAT reads "#<time>" and then the command.
+# awk, not sed: macOS's sed cannot write a newline in a replacement.
 marker="$HOME/.local/state/dotfiles/zsh-history-imported"
 if [[ $DO_HISTORY == 1 && ! -f "$marker" ]]; then
   for zh in "$HOME/.histfile" "$HOME/.zsh_history"; do
     [[ -s "$zh" ]] || continue
     say "Copying zsh history from $zh into ~/.bash_history"
     [[ -f "$HOME/.bash_history" ]] && cp "$HOME/.bash_history" "$HOME/.bash_history.pre-dotfiles.$STAMP"
-    LC_ALL=C sed -E 's/^: ([0-9]+):[0-9]+;/#\1\n/' "$zh" >>"$HOME/.bash_history"
+    LC_ALL=C awk '/^: [0-9]+:[0-9]+;/ { t = $0; sub(/^: /, "", t); sub(/:.*/, "", t); sub(/^: [0-9]+:[0-9]+;/, ""); print "#" t }
+      { print }' "$zh" >>"$HOME/.bash_history"
   done
   mkdir -p "$(dirname "$marker")"
   date >"$marker"
@@ -111,13 +123,23 @@ fi
 
 # --- login shell -------------------------------------------------------------------------------------------------
 
-bash_path="$(command -v bash)"
-current="$(getent passwd "$USER" | cut -d: -f7)"
-if [[ "$current" == */bash ]]; then
+if [[ $OS == Darwin ]]; then
+  bash_path="$HOMEBREW_PREFIX/bin/bash"
+  current="$(dscl . -read "/Users/$USER" UserShell | awk '{print $2}')"
+else
+  bash_path="$(command -v bash)"
+  current="$(getent passwd "$USER" | cut -d: -f7)"
+fi
+if [[ "$current" == "$bash_path" || ($OS == Linux && "$current" == */bash) ]]; then
   say "bash is already the login shell"
 elif [[ $DO_CHSH == 1 ]]; then
   if ! grep -qx "$bash_path" /etc/shells; then
-    bash_path=/bin/bash
+    if [[ $OS == Darwin ]]; then
+      say "Adding $bash_path to /etc/shells (sudo asks for your password)"
+      echo "$bash_path" | sudo tee -a /etc/shells >/dev/null
+    else
+      bash_path=/bin/bash
+    fi
   fi
   say "Making $bash_path the login shell (asks for your password)"
   chsh -s "$bash_path"
