@@ -17,6 +17,12 @@ _path_append() { case ":$PATH:" in *":$1:"*) ;; *) [[ -d "$1" ]] && PATH="$PATH:
 
 # --- Part 1: environment -----------------------------------------------------------------------------------------
 
+# A terminal that sends no locale (PuTTY to the Mac): macOS then has LANG empty, and bash and ble.sh warn on every
+# start ("setlocale: LC_CTYPE: cannot change locale"). Pick UTF-8. macOS has en_US.UTF-8; Linux always has C.UTF-8.
+if [[ -z "${LANG:-}" && -z "${LC_ALL:-}" ]]; then
+  if [[ "$(uname)" == Darwin ]]; then export LANG=en_US.UTF-8; else export LANG=C.UTF-8; fi
+fi
+
 if [[ -z "${HOMEBREW_PREFIX:-}" ]]; then
   for _brew in /opt/homebrew/bin/brew /usr/local/bin/brew /home/linuxbrew/.linuxbrew/bin/brew "$HOME/.linuxbrew/bin/brew"; do
     [[ -x "$_brew" ]] && eval "$("$_brew" shellenv)" && break
