@@ -18,7 +18,7 @@ _path_append() { case ":$PATH:" in *":$1:"*) ;; *) [[ -d "$1" ]] && PATH="$PATH:
 # --- Part 1: environment -----------------------------------------------------------------------------------------
 
 if [[ -z "${HOMEBREW_PREFIX:-}" ]]; then
-  for _brew in /home/linuxbrew/.linuxbrew/bin/brew "$HOME/.linuxbrew/bin/brew"; do
+  for _brew in /opt/homebrew/bin/brew /usr/local/bin/brew /home/linuxbrew/.linuxbrew/bin/brew "$HOME/.linuxbrew/bin/brew"; do
     [[ -x "$_brew" ]] && eval "$("$_brew" shellenv)" && break
   done
   unset _brew
@@ -27,6 +27,7 @@ fi
 [[ -f "$HOME/.deno/env" ]] && . "$HOME/.deno/env"
 
 export EDITOR=nvim VISUAL=nvim
+export BASH_SILENCE_DEPRECATION_WARNING=1 # macOS: no "the default shell is now zsh" note
 export LESS="-F -X $LESS"
 export GOPRIVATE=github.com/solo-io
 export GOPATH="$HOME/go"
@@ -44,6 +45,8 @@ _path_prepend "$BUN_INSTALL/bin"
 _path_prepend "$HOME/.config/herd-lite/bin"
 export PHP_INI_SCAN_DIR="$HOME/.config/herd-lite/bin:$PHP_INI_SCAN_DIR"
 _path_prepend "$HOME/.config/composer/vendor/bin"
+# Homebrew's libpq (psql, pg_dump) is keg-only on macOS.
+[[ -n "${HOMEBREW_PREFIX:-}" ]] && _path_append "$HOMEBREW_PREFIX/opt/libpq/bin"
 
 # Flutter and Android SDK.
 export ANDROID_HOME="$HOME/Android/Sdk"
@@ -67,6 +70,8 @@ export PATH
 # --- Part 2: a person at a terminal ------------------------------------------------------------------------------
 
 [[ $- == *i* ]] || return
+# Part 2 needs bash 4+ (macOS's /bin/bash is 3.2: use Homebrew's bash, see install.sh).
+((BASH_VERSINFO[0] >= 4)) || return
 [[ -z "${CLAUDECODE:-}" && -t 0 && -t 1 && "${TERM:-dumb}" != dumb ]] || return
 
 # ble.sh (zsh-like editing: grey suggestions, colors, menus). Loaded first, attached at the end.
@@ -133,7 +138,11 @@ unset _a _v _f
 ssh-add -l >/dev/null 2>&1
 if [[ $? -eq 2 ]]; then # 2 = no agent (1 = agent without keys, 0 = agent with keys)
   eval "$(ssh-agent -s)" >/dev/null
-  ssh-add ~/.ssh/id_ed25519
+  if [[ "$(uname)" == Darwin ]]; then
+    ssh-add --apple-use-keychain ~/.ssh/id_ed25519 # the passphrase comes from the macOS keychain
+  else
+    ssh-add ~/.ssh/id_ed25519
+  fi
 fi
 
 # Nightly `deno upgrade` (machine-local): once a day after 13:00, from the first prompt past that time.

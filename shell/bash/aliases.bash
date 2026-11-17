@@ -252,7 +252,7 @@ alias gwta='git worktree add'
 alias gwtls='git worktree list'
 alias gwtmv='git worktree move'
 alias gwtrm='git worktree remove'
-alias ip='ip --color=auto'
+command -v ip >/dev/null && alias ip='ip --color=auto'
 alias k=kubectl
 alias kaf='kubectl apply -f'
 alias kapk='kubectl apply -k'

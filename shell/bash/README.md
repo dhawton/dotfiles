@@ -15,6 +15,10 @@ git clone git@github.com:dhawton/dotfiles ~/dev/dotfiles
 ~/dev/dotfiles/shell/bash/install.sh --chsh   # make bash the login shell
 ```
 
+On macOS, install Homebrew first. The script then also installs Homebrew's bash 5 (macOS's `/bin/bash` is 3.2,
+too old for this setup), and `--chsh` adds it to `/etc/shells` (sudo) before it makes it the login shell. Put
+machine-only lines (for example `BWS_ACCESS_TOKEN`, `KUBECONFIG`) in `~/.bashrc.local`.
+
 The script is safe to run again. It keeps old files as `<file>.pre-dotfiles.<date>` and copies the zsh history
 once. Put settings for one machine only in `~/.bashrc.local`.
 
