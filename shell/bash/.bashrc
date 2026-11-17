@@ -14,6 +14,14 @@ DOTFILES_BASH="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
 
 _path_prepend() { case ":$PATH:" in *":$1:"*) ;; *) [[ -d "$1" ]] && PATH="$1:$PATH" ;; esac; }
 _path_append() { case ":$PATH:" in *":$1:"*) ;; *) [[ -d "$1" ]] && PATH="$PATH:$1" ;; esac; }
+# Move a folder to the front of PATH (remove it first if it is already there).
+_path_front() {
+  [[ -d "$1" ]] || return 0
+  local p=":$PATH:"
+  while [[ "$p" == *":$1:"* ]]; do p="${p//:$1:/:}"; done
+  p="${p#:}"; p="${p%:}"
+  PATH="$1${p:+:$p}"
+}
 
 # --- Part 1: environment -----------------------------------------------------------------------------------------
 
@@ -28,6 +36,13 @@ if [[ -z "${HOMEBREW_PREFIX:-}" ]]; then
     [[ -x "$_brew" ]] && eval "$("$_brew" shellenv)" && break
   done
   unset _brew
+fi
+# Homebrew first, also when HOMEBREW_PREFIX came from the parent shell (a new tab or pane). On macOS, /etc/profile
+# (path_helper) puts /opt/homebrew/bin after /usr/bin and /bin, and the check above then skips brew shellenv. Then
+# "bash" is Apple's bash 3.2, and "#!/usr/bin/env bash" scripts break, also under sudo (it keeps this PATH).
+if [[ -n "${HOMEBREW_PREFIX:-}" ]]; then
+  _path_front "$HOMEBREW_PREFIX/sbin"
+  _path_front "$HOMEBREW_PREFIX/bin"
 fi
 [[ -f "$HOME/.cargo/env" ]] && . "$HOME/.cargo/env"
 [[ -f "$HOME/.deno/env" ]] && . "$HOME/.deno/env"
